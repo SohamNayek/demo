@@ -1,0 +1,258 @@
+git config --global user.name "Your Name"
+git config --global user.email "email"
+
+-----------For making notepad++ as default editor for GIT
+1. Add notepadd++ path to PATH variable of windows.
+2. Restart GIT and type notepad++ ~/.bash_profile.
+3. Add line alias npp='notepad++ -multiInst -noSession'
+4. Restart GIT and type git config --global core.editor "notepad++ -multiInst -noSession"
+
+
+---------------Initializing GIT repo locally-------------------
+git init demo
+
+---------Adding GIT files to staging
+git add README.md
+git add . (. insead of filename means to add all files to staging in current folder)
+git add -u only takes the files updated or deleted
+git add -A covers all types of modifications possible in the curent directory.
+
+--------------------------Commit staged files to .git
+git commit -m "First file to demo repo"
+If we dont give -m and message git will open its default editor to give commit message.
+
+-----------Add an existing project folder to git
+go inside that project folder
+
+git init . (. means current folder)
+
+-------------Checking git logs
+git log
+git show will show last commit along with its changes.
+
+-----------gitignore
+to specify file types that we want git to ignore for ex : log files
+create .ignore file
+notepad++ .gitignore
+Add filename or expression you want to ignore in .gitignore file
+*.log
+Commit .gitignore file in git
+
+
+
+git log --oneline --graph --decorate --all
+--graph represents an asterix based graph denoting our branch hierarchy.
+--decorate tells us which commit are part of which branch
+--all provides the history of all branches that are available in this repo.
+
+git help log shows all command which can be used with log
+
+------------See all files that are being tracked by GIT
+modified file means git is alredy tracking that file and it has been changed.
+new file means its not tracked by GIT
+to see all files tracked by git in the current folder
+git ls-files
+
+----------------Express commit
+git commit -am "Second git commit". -a means to add files into staging. And it will only add tracked files. 
+
+----------------Aliasing a long command
+git config --globl alias.hist "log --oneline --graph --decorate --all"
+so now hist becomes a git command
+git hist
+
+git hist -- README.md shows only those logs that contain word README.
+
+---------------For listing git config values 
+git config --global --list
+
+
+----Removing a file from staging area
+git reset HEAD filename
+
+-----------Reverting to last committed file
+git checkout -- filename
+
+-------------Renaming and Deleting through GIT
+Addition to normal rename and delete git also adds and tracks in staging area.
+
+git mv demo.txt changeddemo.txt
+git rm demo.txt
+
+To complete rename or deletion we only need to commit the changes.
+
+---------------------------------GIT Diff
+
+git diff d44e90 HEAD
+git difftool d44e90 HEAD (difftool opens the comparing tool configured in git for ex p4merge)
+
+only git diff gives whats recently changed in git directory vs HEAD
+git help diff
+
+--------------git merge
+first checkout to master to which you want to merge a branch
+
+git merge other-branch
+In case of conflict type git mergetool which opens configured mergetool i.e p4merge
+After conflict resolve commit changes by git commit -m command
+
+----Marking special events with tagging
+Lightweight tag and annotated tag
+
+git tag mytag (lightweight) (if you dont specify any commit it will be HEAD)
+git tag --list to list out tags
+git tag -d mytag to delete mytag
+
+git tag -a v1.0 -m "Release 1.0" (annotated)
+git show v1.0 shows detail of tag commit and its details.
+
+----------------------Stashing
+GIT stash is for storing temporary unwanted changes so that you can retrieve afterwards
+
+git stash (pushes changes to stash queue and makes the directory clean)
+git stash list (shows list of stashes)
+git stash pop (retrieves and removes the changes from stash queue and applies to current directory)
+
+----------------------RESET & REFLOG----------------
+reset lets you go to a previous commit by providing commit id.
+soft rest is least destructive as it preserves your staging changes and working directory changes. 
+git reset cc1bbec --soft 
+
+Mixed reset which is by default unstages the changes and adds to working directory changes.
+git reset cc1bbec --mixed
+
+Hard reset is most destructible of all modes
+It removes all changes both from stage and working directory.
+git reset cc1bbes --hard
+
+Now with reflog command you can see all the actions done on your git
+So by seeing reflog we can see commit ids and undo reset changes.
+
+----------------------------------------------------------------------------
+SohamNayek
+sohamnayek50@gmail.com
+
+--------------------------Create a new repository and link local to remote----------------
+go to your local repo
+git remote add origin git@github.com:SohamNayek/demo.git (ssh already setup)
+git remote add origin https://github.com/SohamNayek/demo.git (Username and password prompt)
+
+git push -u origin master --tags ( -u means telling git to estabising a tracking relationshipbetween local master and origin master from next time push no need to put -u)
+(--tags means we also want to push tags from local to remote)
+
+
+-------------------To remove origin from repo
+git remote rm origin to remove origin
+
+------------------Check Origin
+git remote -v
+
+----------------------Setting up SSH
+Goto /c/Users/snayek
+Create a folder .ssh
+Go inside the .ssh folder
+type ssh-keygen -t rsa -C "sohamnayek50@gmail.com"
+Now copy the contents of id_rsa.pub file which is generated public key.
+And add it to to GIT HUB.
+
+-----------------Checking out remore repo to local
+git clone git@github.com:SohamNayek/demo.git demoproj 
+
+demoproj is the folder name where we want git to checkout. If not specified git will create a folder similar to repo name.
+
+------------------git pull
+
+git pull is combination of two commands git fetch and git merge.
+If your local doesnt have any changes git pull will go without any issues.
+If you have 1 commit in local thats not pushed and 1 commit in remote that is not in your local
+master will go to a diverge mode which you need to commit and push.
+If your local changes are not required do git checkout on unstage files first and then git pull.
+
+-----------------------Updating remote reference in GIT
+
+First copy the clone path from git hub.
+in local type  git remote set-url origin git@github.com:SohamNayek/newdemo.git
+Now git remote -v will show the new reference to GitHub account.
+For more information we can say git remote show origin
+
+-----------------git merge locally
+git checkout to branch to which you want to merge.
+now pull to have latest
+now type git merge branch_name which you want to merge to current.
+If fast forward merge just push to origin
+if automatical changes and opted for commit message then give commit message and push.
+if conflict then solve and commit and push.
+
+
+------------Delete a branch
+git delete -d branch_name
+Now the branch is deleted locally. To let remote know and delete from remote.
+git push origin :branch_name
+
+----------------Remove reference of deleted branch in local
+git fetch -p 
+
+-----------------To update branches in local which git added in remote
+git fetch
+
+
+------------------Pull with rebase
+
+Suppose in the same branch something is changed in remote and something is changed in your local.
+So once we do git fetch remote changes will come to local. If the changes are in same file we will see a diverging branch message when 
+we run git status.
+If we do git merge it would result in a commit.
+So if we want the remote changes first then our local changes commit we can do 
+git pull --rebase.
+
+As rebase rewinds to point where branch was created. incorpoates all changes in master then puts changes or commit of current branch.
+
+--------------------Fork---------------------
+while logged in we need to go to repository which we want to fork.
+Click on fork button there.
+Now a fork repo will be created in your account.
+Clone forked repo in your local by normal cloning process.
+Checkout a branch from that clone like normal.
+git commit the changes and push as normal.
+Now we can see the branch in our forked repo.
+Now we need to raise PR where from will be our branch from forked repo to master of original repo.
+After PR is merged our forked repo still doesnt have the changes of our newly pushed branch or other changes made to original repo.
+So we need to copy the clone url of original repo.
+In our local repo " git remote add upstream origin_repo_clone_url"
+Now our git remote -v shows two pair of remote references. One origin and another upstream.
+Now if we do git pull upstream master all changes from original repo master will come to our local forked repo master.
+Now "git push origin master" pushes all changes to forked repo master.   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
